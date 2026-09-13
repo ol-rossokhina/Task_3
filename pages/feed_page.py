@@ -1,5 +1,7 @@
-import time
 from typing import List, Tuple
+
+from selenium.common.exceptions import TimeoutException
+from selenium.webdriver.support.ui import WebDriverWait
 
 from config import FEED_URL
 from locators.feed_locators import FeedLocators
@@ -55,28 +57,38 @@ class FeedPage(BasePage):
         """
         Заказ, только что созданный через API, не сразу учитывается в счётчиках
         "Выполнено" — сервер обрабатывает его (created -> done) с задержкой.
-        Поэтому вместо проверки сразу после создания раз в секунду обновляем
-        ленту и проверяем счётчики, пока оба не увеличатся либо не закончатся попытки.
+        Вместо проверки сразу после создания дожидаемся увеличения обоих
+        счётчиков через WebDriverWait с кастомным условием (готового
+        expected_conditions для сравнения двух чисел между перезагрузками
+        страницы в Selenium нет, поэтому условие описано отдельной функцией
+        и передано в until — без ручных time.sleep).
         """
-        total_after, today_after = total_before, today_before
+        result: dict = {}
 
-        for _ in range(timeout // poll_interval):
+        def _counters_increased(_driver) -> bool:
             self.open()
             total_after = self.get_total_done_count()
             today_after = self.get_today_done_count()
+            result['last_total'] = total_after
+            result['last_today'] = today_after
 
             if total_after > total_before and today_after > today_before:
-                break
+                result['total'] = total_after
+                result['today'] = today_after
+                return True
 
-            time.sleep(poll_interval)
-        else:
+            return False
+
+        try:
+            WebDriverWait(self.driver, timeout, poll_frequency=poll_frequency).until(_counters_increased)
+        except TimeoutException:
             raise TimeoutError(
                 f'Счётчики не увеличились за {timeout} секунд ожидания: '
                 f'было total={total_before}, today={today_before}; '
-                f'осталось total={total_after}, today={today_after}'
+                f'осталось total={result.get("last_total")}, today={result.get("last_today")}'
             )
 
-        return total_after, today_after
+        return result['total'], result['today']
 
     def wait_for_order_in_progress(
         self,
@@ -88,24 +100,28 @@ class FeedPage(BasePage):
         Лента показывает только последние 5 заказов "В работе" и обновляется
         не мгновенно — между созданием заказа через API и открытием ленты
         на активном стенде успевают появиться другие заказы, из-за чего наш
-        может не попасть в список с первой попытки. Поэтому вместо одной
-        проверки раз в секунду обновляем ленту, пока заказ не появится
-        в списке либо не закончатся попытки.
+        может не попасть в список с первой попытки. Дожидаемся появления
+        заказа через WebDriverWait с кастомным условием, а не ручным опросом.
         """
-        in_progress_orders: List[str] = []
+        result: dict = {}
 
-        for _ in range(timeout // poll_interval):
+        def _order_appeared(_driver) -> bool:
             self.open()
-            in_progress_orders = self.get_in_progress_order_numbers()
+            orders = self.get_in_progress_order_numbers()
+            result['last_seen'] = orders
 
-            if formatted_order_number in in_progress_orders:
-                break
+            if formatted_order_number in orders:
+                result['orders'] = orders
+                return True
 
-            time.sleep(poll_interval)
-        else:
+            return False
+
+        try:
+            WebDriverWait(self.driver, timeout, poll_frequency=poll_frequency).until(_order_appeared)
+        except TimeoutException:
             raise TimeoutError(
                 f'Заказ {formatted_order_number} не появился в разделе "В работе" '
-                f'за {timeout} секунд ожидания: последний раз список был {in_progress_orders}'
+                f'за {timeout} секунд ожидания: последний раз список был {result.get("last_seen")}'
             )
 
-        return in_progress_orders
+        return result['orders']
