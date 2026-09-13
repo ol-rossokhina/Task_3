@@ -63,4 +63,10 @@ def pytest_runtest_makereport(item, call):
     if report.when == 'call' and report.failed:
         test_driver = item.funcargs.get('driver')
         if test_driver is not None:
-            save_page_source_on_failure(test_driver, item.nodeid)
+            try:
+                save_page_source_on_failure(test_driver, item.nodeid)
+            except Exception as debug_error:
+                # Диагностический код не должен ронять весь прогон тестов —
+                # если сбор дебага сам упал (например, сессия браузера уже
+                # недоступна), просто сообщаем об этом и продолжаем.
+                print(f'\n[debug] не удалось собрать диагностику для {item.nodeid}: {debug_error}')

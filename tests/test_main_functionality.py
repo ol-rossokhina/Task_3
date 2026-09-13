@@ -1,7 +1,7 @@
 import allure
 
 from config import FEED_URL, MAIN_URL
-from pages.base_page import BasePage
+from pages.feed_page import FeedPage
 from pages.main_page import MainPage
 
 
@@ -11,25 +11,23 @@ class TestMainFunctionality:
 
     @allure.title('Переход в конструктор по клику на "Конструктор" в шапке')
     def test_navigate_to_constructor(self, driver):
-        base_page = BasePage(driver)
-        base_page.driver.get(FEED_URL)
+        feed_page = FeedPage(driver).open()
 
         with allure.step('Кликнуть "Конструктор" в шапке'):
-            base_page.go_to_constructor()
+            feed_page.go_to_constructor()
 
         with allure.step('Проверить, что открылась страница конструктора'):
-            base_page.wait_for_url_to_be(MAIN_URL)
+            feed_page.wait_for_url_to_be(MAIN_URL)
 
     @allure.title('Переход в ленту заказов по клику на "Лента заказов" в шапке')
     def test_navigate_to_feed(self, driver):
-        base_page = BasePage(driver)
-        base_page.driver.get(MAIN_URL)
+        main_page = MainPage(driver).open()
 
         with allure.step('Кликнуть "Лента заказов" в шапке'):
-            base_page.go_to_feed()
+            main_page.go_to_feed()
 
         with allure.step('Проверить, что открылась лента заказов'):
-            base_page.wait_for_url_to_be(FEED_URL)
+            main_page.wait_for_url_to_be(FEED_URL)
 
     @allure.title('Клик по ингредиенту открывает модалку с его деталями')
     def test_ingredient_click_opens_details_modal(self, driver, ingredients_by_type):
