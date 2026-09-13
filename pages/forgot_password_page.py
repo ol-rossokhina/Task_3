@@ -7,7 +7,7 @@ class ForgotPasswordPage(BasePage):
     """Page Object страницы /forgot-password."""
 
     def open(self) -> 'ForgotPasswordPage':
-        self.driver.get(FORGOT_PASSWORD_URL)
+        self.open_url(FORGOT_PASSWORD_URL)
         return self
 
     def is_open(self) -> bool:

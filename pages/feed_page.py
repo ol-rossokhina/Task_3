@@ -11,13 +11,13 @@ from pages.order_details_modal import OrderDetailsModal
 # Заказ переходит в статус "готов" на сервере не мгновенно, а с реальной
 # задержкой обработки — столько (в секундах) ждём, пока счётчики "Выполнено" обновятся.
 COUNTERS_UPDATE_TIMEOUT = 60
-COUNTERS_POLL_INTERVAL = 1
+COUNTERS_POLL_FREQUENCY = 1
 
 # Лента показывает только последние 5 заказов в каждом разделе и обновляется
 # не мгновенно — на активном стенде заказ может не успеть попасть в список
 # с первой попытки, если параллельно создаются другие заказы.
 FEED_LIST_UPDATE_TIMEOUT = 30
-FEED_LIST_POLL_INTERVAL = 1
+FEED_LIST_POLL_FREQUENCY = 1
 
 
 class FeedPage(BasePage):
@@ -52,7 +52,7 @@ class FeedPage(BasePage):
         total_before: int,
         today_before: int,
         timeout: int = COUNTERS_UPDATE_TIMEOUT,
-        poll_interval: int = COUNTERS_POLL_INTERVAL,
+        poll_frequency: int = COUNTERS_POLL_FREQUENCY,
     ) -> Tuple[int, int]:
         """
         Заказ, только что созданный через API, не сразу учитывается в счётчиках
@@ -94,7 +94,7 @@ class FeedPage(BasePage):
         self,
         formatted_order_number: str,
         timeout: int = FEED_LIST_UPDATE_TIMEOUT,
-        poll_interval: int = FEED_LIST_POLL_INTERVAL,
+        poll_frequency: int = FEED_LIST_POLL_FREQUENCY,
     ) -> List[str]:
         """
         Лента показывает только последние 5 заказов "В работе" и обновляется

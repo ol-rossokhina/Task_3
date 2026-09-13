@@ -72,6 +72,10 @@ class BasePage:
     def wait_for_url_to_be(self, url: str) -> None:
         self.wait.until(EC.url_to_be(url))
 
+    def get_active_element(self) -> WebElement:
+        """Возвращает текущий активный (сфокусированный) элемент страницы."""
+        return self.driver.execute_script('return document.activeElement')    
+
     # Навигация по шапке — общая для всех страниц
 
     def go_to_constructor(self) -> None:

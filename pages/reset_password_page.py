@@ -16,5 +16,4 @@ class ResetPasswordPage(BasePage):
     def is_password_field_active(self) -> bool:
         """Проверяет, что поле пароля стало активным элементом страницы (в фокусе)."""
         password_input = self.get_password_input()
-        active_element = self.driver.execute_script('return document.activeElement')
-        return password_input == active_element
+        return password_input == self.get_active_element()
