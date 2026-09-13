@@ -7,7 +7,7 @@ class LoginPage(BasePage):
     """Page Object страницы /login."""
 
     def open(self) -> 'LoginPage':
-        self.driver.get(LOGIN_URL)
+        self.open_url(LOGIN_URL)
         return self
 
     def login(self, email: str, password: str) -> None:

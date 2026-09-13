@@ -12,7 +12,7 @@ class MainPage(BasePage):
     """Page Object страницы конструктора (/)."""
 
     def open(self) -> 'MainPage':
-        self.driver.get(MAIN_URL)
+        self.open_url(MAIN_URL)
         return self
 
     def open_ingredient_details(self, ingredient_name: str) -> IngredientDetailsModal:
