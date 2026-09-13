@@ -29,6 +29,7 @@ class TestPersonalAccount:
 
         with allure.step('Проверить, что открылась история заказов'):
             profile_page.wait_for_url_to_be(ORDER_HISTORY_URL)
+            assert profile_page.driver.current_url == ORDER_HISTORY_URL
 
     @allure.title('Выход из личного кабинета по клику на "Выход"')
     def test_logout(self, logged_in_driver):
@@ -39,3 +40,4 @@ class TestPersonalAccount:
 
         with allure.step('Проверить, что пользователь вышел и перенаправлен на страницу входа'):
             profile_page.wait_for_url_to_be(LOGIN_URL)
+            assert profile_page.driver.current_url == LOGIN_URL
