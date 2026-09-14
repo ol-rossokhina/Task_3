@@ -1,7 +1,6 @@
 from typing import List, Tuple
 
 from selenium.common.exceptions import TimeoutException
-from selenium.webdriver.support.ui import WebDriverWait
 
 from config import FEED_URL
 from locators.feed_locators import FeedLocators
@@ -80,7 +79,7 @@ class FeedPage(BasePage):
             return False
 
         try:
-            WebDriverWait(self.driver, timeout, poll_frequency=poll_frequency).until(_counters_increased)
+            self.wait_until(_counters_increased, timeout=timeout, poll_frequency=poll_frequency)
         except TimeoutException:
             raise TimeoutError(
                 f'Счётчики не увеличились за {timeout} секунд ожидания: '
@@ -117,7 +116,7 @@ class FeedPage(BasePage):
             return False
 
         try:
-            WebDriverWait(self.driver, timeout, poll_frequency=poll_frequency).until(_order_appeared)
+            self.wait_until(_order_appeared, timeout=timeout, poll_frequency=poll_frequency)
         except TimeoutException:
             raise TimeoutError(
                 f'Заказ {formatted_order_number} не появился в разделе "В работе" '

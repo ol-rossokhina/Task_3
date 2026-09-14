@@ -72,9 +72,22 @@ class BasePage:
     def wait_for_url_to_be(self, url: str) -> None:
         self.wait.until(EC.url_to_be(url))
 
+    def wait_until(self, condition, timeout: int, poll_frequency: float = 1) -> None:
+        """
+        Ждёт выполнения произвольного условия (функции от driver) с заданной
+        частотой опроса. Общая точка входа для нестандартных ожиданий, для
+        которых нет готового expected_conditions — чтобы Page Object не
+        создавали WebDriverWait самостоятельно, а пользовались этим методом.
+        """
+        WebDriverWait(self.driver, timeout, poll_frequency=poll_frequency).until(condition)
+
     def get_active_element(self) -> WebElement:
         """Возвращает текущий активный (сфокусированный) элемент страницы."""
-        return self.driver.execute_script('return document.activeElement')    
+        return self.driver.execute_script('return document.activeElement')
+
+    def get_current_url(self) -> str:
+        """Возвращает текущий URL страницы."""
+        return self.driver.current_url    
 
     # Навигация по шапке — общая для всех страниц
 

@@ -36,7 +36,7 @@ class TestPasswordRecovery:
 
         with allure.step('Проверить, что произошёл переход на страницу ввода нового пароля'):
             forgot_password_page.wait_for_url_to_be(RESET_PASSWORD_URL)
-            assert forgot_password_page.driver.current_url == RESET_PASSWORD_URL
+            assert forgot_password_page.get_current_url() == RESET_PASSWORD_URL
 
     @allure.title('Клик по иконке "показать пароль" делает поле пароля активным')
     def test_toggle_password_visibility_makes_field_active(self, driver):

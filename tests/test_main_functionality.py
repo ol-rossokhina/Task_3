@@ -18,7 +18,7 @@ class TestMainFunctionality:
 
         with allure.step('Проверить, что открылась страница конструктора'):
             feed_page.wait_for_url_to_be(MAIN_URL)
-            assert feed_page.driver.current_url == MAIN_URL
+            assert feed_page.get_current_url() == MAIN_URL
 
     @allure.title('Переход в ленту заказов по клику на "Лента заказов" в шапке')
     def test_navigate_to_feed(self, driver):
@@ -29,7 +29,7 @@ class TestMainFunctionality:
 
         with allure.step('Проверить, что открылась лента заказов'):
             main_page.wait_for_url_to_be(FEED_URL)
-            assert main_page.driver.current_url == FEED_URL
+            assert main_page.get_current_url() == FEED_URL
 
     @allure.title('Клик по ингредиенту открывает модалку с его деталями')
     def test_ingredient_click_opens_details_modal(self, driver, ingredients_by_type):
